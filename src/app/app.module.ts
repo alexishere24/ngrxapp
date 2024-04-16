@@ -1,31 +1,47 @@
-import { NgDompurifySanitizer } from '@tinkoff/ng-dompurify';
+import { NgDompurifySanitizer } from "@tinkoff/ng-dompurify";
 import {
-  TuiRootModule,
-  TuiDialogModule,
-  TuiAlertModule,
-  TUI_SANITIZER,
-} from '@taiga-ui/core';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
+	TuiRootModule,
+	TuiDialogModule,
+	TuiAlertModule,
+	TUI_SANITIZER,
+} from "@taiga-ui/core";
+import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
+import { NgModule, isDevMode } from "@angular/core";
+import { BrowserModule } from "@angular/platform-browser";
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { HttpClientModule } from '@angular/common/http';
+import { AppRoutingModule } from "./app-routing.module";
+import { AppComponent } from "./app.component";
+import { HttpClientModule } from "@angular/common/http";
+import { PostsComponent } from "./components/posts/posts.component";
+import { StoreModule } from "@ngrx/store";
+import { StoreDevtoolsModule } from "@ngrx/store-devtools";
+import { reducers } from "./store/reducers";
+import { EffectsModule } from "@ngrx/effects";
+import { PostsEffects } from "./store/effects";
 
 @NgModule({
-  declarations: [AppComponent],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    HttpClientModule,
-
-    TuiRootModule,
-    TuiDialogModule,
-    TuiAlertModule,
-  ],
-  providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
-  bootstrap: [AppComponent],
+	declarations: [AppComponent],
+	imports: [
+		BrowserModule,
+		AppRoutingModule,
+		BrowserAnimationsModule,
+		HttpClientModule,
+		TuiRootModule,
+		TuiDialogModule,
+		TuiAlertModule,
+		StoreModule.forRoot({ posts: reducers }),
+		// EffectsModule.forRoot([PostsEffects]),
+		StoreDevtoolsModule.instrument({
+			maxAge: 25, // Retains last 25 states
+			logOnly: !isDevMode(), // Restrict extension to log-only mode
+			autoPause: true, // Pauses recording actions and state changes when the extension window is not open
+			trace: false, //  If set to true, will include stack trace for every dispatched action, so you can see it in trace tab jumping directly to that part of code
+			traceLimit: 75, // maximum stack trace frames to be stored (in case trace option was provided as true)
+			connectInZone: true, // If set to true, the connection is established within the Angular zone
+		}),
+		PostsComponent,
+	],
+	providers: [{ provide: TUI_SANITIZER, useClass: NgDompurifySanitizer }],
+	bootstrap: [AppComponent],
 })
 export class AppModule {}
